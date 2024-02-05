@@ -13,6 +13,39 @@ import time
 icons_folder = "iconcache"
 os.makedirs(icons_folder, exist_ok=True)
 
+def open_programwindow():
+    def close_animation_window(event):
+        animation_window.destroy()
+
+    def execute_program(program_path):
+        os.startfile(program_path)
+
+    animation_window = tk.Toplevel(root)
+    animation_window.overrideredirect(True)
+    animation_window.attributes('-topmost', True)
+    animation_window.geometry("600x550+0+482")  # Adjust the position as needed
+    animation_window.title("Start Menu Shortcuts")
+    animation_window.configure(background='#1B3769')
+
+    start_menu_path = r'C:\ProgramData\Microsoft\Windows\Start Menu\Programs'
+    shortcuts = [f for f in os.listdir(start_menu_path) if f.endswith('.lnk')]
+
+    for shortcut in shortcuts:
+        program_path = os.path.join(start_menu_path, shortcut)
+
+        frame = tk.Frame(animation_window, bg='#1B3769')
+        frame.pack(fill=tk.X)
+
+        label = tk.Label(frame, text=shortcut[:-4], bg='#1B3769', fg='white', anchor='w', font=("Arial", 12))
+        label.pack(side=tk.LEFT, padx=5)
+
+        button = tk.Button(frame, text="Run", command=lambda path=program_path: execute_program(path), font=("Arial", 10))
+        button.pack(side=tk.RIGHT, padx=5)
+
+    # Bind an event to close the window when clicked outside
+    animation_window.bind("<FocusOut>", close_animation_window)
+
+
 def focus_window(window_title):
     for window in Desktop(backend="uia").windows():
         if window.window_text() == window_title:
@@ -50,7 +83,7 @@ def update_buttons():
         if isinstance(widget, tk.Button):
             widget.destroy()
 
-    programbutton = tk.Button(root, activebackground="#1F355A", bd=6, width=5, height=3, bg="#346BCA", highlightcolor="#3D5887", highlightthickness=0)
+    programbutton = tk.Button(root, activebackground="#1F355A", bd=6, width=5, height=3, bg="#346BCA", highlightcolor="#3D5887", highlightthickness=0, command=open_programwindow)
     programbutton.pack(side=tk.LEFT)
 
     # List and create buttons for each open window with icons
@@ -71,15 +104,15 @@ def update_buttons():
             pil_image = Image.open(os.path.join(icons_folder, icon_path))
             tk_image = ImageTk.PhotoImage(pil_image)
 
-            button = tk.Button(root, bd=6, activebackground="#000000", bg="#000000", image=tk_image, highlightthickness=0, height=70, command=lambda title=window.window_text(): focus_window(title))
+            button = tk.Button(root, bd=6, activebackground="#000000", bg="#000000", image=tk_image, highlightthickness=0, width=37, height=70, command=lambda title=window.window_text(): focus_window(title))
             button.pack(side=tk.LEFT, anchor='nw')
             button.image = tk_image
             button.pack(side=tk.LEFT)
         except FileNotFoundError:
             # Skip this window if icon extraction fails
             continue
-        
-    root.after(800, update_buttons)
+
+    root.after(1000, update_buttons)
 
 # Initial update
 update_buttons()
