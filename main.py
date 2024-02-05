@@ -50,7 +50,7 @@ def update_buttons():
         if isinstance(widget, tk.Button):
             widget.destroy()
 
-    programbutton = tk.Button(root, bd=6, width=5, height=3, bg="#346BCA", highlightcolor="#3D5887", highlightthickness=0)
+    programbutton = tk.Button(root, activebackground="#1F355A", bd=6, width=5, height=3, bg="#346BCA", highlightcolor="#3D5887", highlightthickness=0)
     programbutton.pack(side=tk.LEFT)
 
     # List and create buttons for each open window with icons
@@ -71,15 +71,15 @@ def update_buttons():
             pil_image = Image.open(os.path.join(icons_folder, icon_path))
             tk_image = ImageTk.PhotoImage(pil_image)
 
-            button = tk.Button(root, bd=6, bg="#000000", image=tk_image, highlightthickness=0, height=70, command=lambda title=window.window_text(): focus_window(title))
+            button = tk.Button(root, bd=6, activebackground="#000000", bg="#000000", image=tk_image, highlightthickness=0, height=70, command=lambda title=window.window_text(): focus_window(title))
             button.pack(side=tk.LEFT, anchor='nw')
             button.image = tk_image
             button.pack(side=tk.LEFT)
         except FileNotFoundError:
             # Skip this window if icon extraction fails
             continue
-
-    root.after(800, update_buttons)  # Update buttons every 5 seconds
+        
+    root.after(800, update_buttons)
 
 # Initial update
 update_buttons()
